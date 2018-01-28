@@ -1,0 +1,45 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package me.ferrybig.javacoding.servermanagerbackend;
+
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
+import io.netty.handler.ssl.SslContext;
+
+/**
+ */
+public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel> {
+
+    private static final String WEBSOCKET_PATH = "/websocket";
+	private final LogRecorder logRecorder;
+
+    private final SslContext sslCtx;
+
+    public WebSocketServerInitializer(LogRecorder logRecorder, SslContext sslCtx) {
+		this.logRecorder = logRecorder;
+        this.sslCtx = sslCtx;
+    }
+
+    @Override
+    public void initChannel(SocketChannel ch) throws Exception {
+        ChannelPipeline pipeline = ch.pipeline();
+        if (sslCtx != null) {
+            pipeline.addLast(sslCtx.newHandler(ch.alloc()));
+        }
+        pipeline.addLast(new HttpServerCodec());
+        pipeline.addLast(new HttpObjectAggregator(65536));
+        pipeline.addLast(new WebSocketServerCompressionHandler());
+        pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH, null, true));
+        pipeline.addLast(new WebSocketIndexPageHandler());
+        pipeline.addLast(new WebSocketFrameHandler(logRecorder));
+    }
+}
