@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package me.ferrybig.javacoding.servermanagerbackend;
 
 import java.util.Collections;
@@ -17,6 +16,7 @@ public class ServerConfig {
 	public ServerConfig() {
 		this(Collections.emptyList(), "");
 	}
+
 	public ServerConfig(List<String> commandLine, String directory) {
 		this.commandLine = commandLine;
 		this.directory = directory;

@@ -3,29 +3,58 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package me.ferrybig.javacoding.servermanagerbackend;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
 public class Server {
+
 	private final ServerConfig config;
 	private final LogRecorder logFile;
 	private final ProcessWatcher processWatcher;
+	private volatile boolean locked = false;
 
 	public Server(ServerConfig config, ExecutorService threadpool) {
 		this.config = config;
 		this.logFile = new LogRecorder();
-		this.processWatcher = new ProcessWatcher(logFile, threadpool);
+		this.processWatcher = new ProcessWatcher(logFile, threadpool, this);
 	}
 
-	public void start() throws IOException {
+	public synchronized void start() throws IOException {
+		if (locked) {
+			throw new IllegalStateException("Server locked");
+		}
 		this.processWatcher.start(this.config.getCommandLine(), this.config.getDirectory());
 	}
 
-	public void stop() throws IOException {
+	public synchronized boolean tryStart() throws IOException {
+		if (locked) {
+			return false;
+		}
+		return this.processWatcher.tryStart(this.config.getCommandLine(), this.config.getDirectory());
+	}
+
+	public synchronized void kill() throws IOException {
+		if (locked) {
+			throw new IllegalStateException("Server locked");
+		}
 		this.processWatcher.kill();
+	}
+
+	public synchronized boolean tryKill() {
+		if (locked) {
+			return false;
+		}
+		return this.processWatcher.tryKill();
+	}
+
+	public synchronized void lock() {
+		this.locked = true;
+	}
+
+	public synchronized void unlock() {
+		this.locked = false;
 	}
 
 	public long addByteListener(ByteListener listener) {

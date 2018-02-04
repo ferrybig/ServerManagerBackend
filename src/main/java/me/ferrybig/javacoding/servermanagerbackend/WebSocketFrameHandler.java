@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package me.ferrybig.javacoding.servermanagerbackend;
 
 import io.netty.buffer.ByteBuf;
@@ -40,30 +39,30 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
 		this.ctx = ctx;
 	}
 
-    @Override
-    protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
-        // ping and pong frames already handled
+	@Override
+	protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
+		// ping and pong frames already handled
 
-        if (frame instanceof TextWebSocketFrame) {
-            // Send the uppercase string back.
-            String request = ((TextWebSocketFrame) frame).text();
-            LOG.info(MessageFormat.format("{0} received {1}", ctx.channel(), request));
+		if (frame instanceof TextWebSocketFrame) {
+			// Send the uppercase string back.
+			String request = ((TextWebSocketFrame) frame).text();
+			LOG.info(MessageFormat.format("{0} received {1}", ctx.channel(), request));
 
-			if(request.equals("register")) {
+			if (request.equals("register")) {
 				server.addByteListener(this::sendBytes, true);
 			}
-			if(request.equals("start")) {
+			if (request.equals("start")) {
 				server.start();
 			}
-			if(request.equals("stop")) {
-				server.stop();
+			if (request.equals("stop")) {
+				server.kill();
 			}
-			if(request.startsWith("sendmessage")) {
+			if (request.startsWith("sendmessage")) {
 				server.sendMessage(request.substring("sendmessage ".length()));
 			}
-        } else {
-            String message = "unsupported frame type: " + frame.getClass().getName();
-            throw new UnsupportedOperationException(message);
-        }
-    }
+		} else {
+			String message = "unsupported frame type: " + frame.getClass().getName();
+			throw new UnsupportedOperationException(message);
+		}
+	}
 }

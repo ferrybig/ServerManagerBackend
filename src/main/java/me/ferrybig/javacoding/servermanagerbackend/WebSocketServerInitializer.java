@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package me.ferrybig.javacoding.servermanagerbackend;
 
 import io.netty.channel.ChannelInitializer;
@@ -19,27 +18,27 @@ import io.netty.handler.ssl.SslContext;
  */
 public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel> {
 
-    private static final String WEBSOCKET_PATH = "/websocket";
+	private static final String WEBSOCKET_PATH = "/websocket";
 	private final Server server;
 
-    private final SslContext sslCtx;
+	private final SslContext sslCtx;
 
-    public WebSocketServerInitializer(Server server, SslContext sslCtx) {
+	public WebSocketServerInitializer(Server server, SslContext sslCtx) {
 		this.server = server;
-        this.sslCtx = sslCtx;
-    }
+		this.sslCtx = sslCtx;
+	}
 
-    @Override
-    public void initChannel(SocketChannel ch) throws Exception {
-        ChannelPipeline pipeline = ch.pipeline();
-        if (sslCtx != null) {
-            pipeline.addLast(sslCtx.newHandler(ch.alloc()));
-        }
-        pipeline.addLast(new HttpServerCodec());
-        pipeline.addLast(new HttpObjectAggregator(65536));
-        pipeline.addLast(new WebSocketServerCompressionHandler());
-        pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH, null, true));
-        pipeline.addLast(new WebSocketIndexPageHandler());
-        pipeline.addLast(new WebSocketFrameHandler(server));
-    }
+	@Override
+	public void initChannel(SocketChannel ch) throws Exception {
+		ChannelPipeline pipeline = ch.pipeline();
+		if (sslCtx != null) {
+			pipeline.addLast(sslCtx.newHandler(ch.alloc()));
+		}
+		pipeline.addLast(new HttpServerCodec());
+		pipeline.addLast(new HttpObjectAggregator(65536));
+		pipeline.addLast(new WebSocketServerCompressionHandler());
+		pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH, null, true));
+		pipeline.addLast(new WebSocketIndexPageHandler());
+		pipeline.addLast(new WebSocketFrameHandler(server));
+	}
 }

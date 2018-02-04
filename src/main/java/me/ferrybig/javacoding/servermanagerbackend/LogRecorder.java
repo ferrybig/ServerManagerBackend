@@ -61,7 +61,7 @@ public class LogRecorder implements ByteListener {
 			}
 			totalBytes += length;
 			this.notifyAll();
-			for(ByteListener l : this.listeners) {
+			for (ByteListener l : this.listeners) {
 				l.onIncomingBytes(source, start, end);
 			}
 		}
@@ -136,16 +136,17 @@ public class LogRecorder implements ByteListener {
 
 	public synchronized long addByteListener(ByteListener listener, boolean sendBuffer) {
 		this.listeners.add(listener);
-		if(sendBuffer) {
-			if(this.totalBytes != 0)
-			if(this.totalBytes < this.buffer.length) {
-				assert this.totalBytes == this.writeIndex;
-				listener.onIncomingBytes(this.buffer, 0, this.writeIndex);
-			} else if(this.writeIndex == 0) {
-				listener.onIncomingBytes(this.buffer, 0, this.buffer.length);
-			} else {
-				listener.onIncomingBytes(this.buffer, this.writeIndex, this.buffer.length - this.writeIndex);
-				listener.onIncomingBytes(this.buffer, 0, this.writeIndex);
+		if (sendBuffer) {
+			if (this.totalBytes != 0) {
+				if (this.totalBytes < this.buffer.length) {
+					assert this.totalBytes == this.writeIndex;
+					listener.onIncomingBytes(this.buffer, 0, this.writeIndex);
+				} else if (this.writeIndex == 0) {
+					listener.onIncomingBytes(this.buffer, 0, this.buffer.length);
+				} else {
+					listener.onIncomingBytes(this.buffer, this.writeIndex, this.buffer.length - this.writeIndex);
+					listener.onIncomingBytes(this.buffer, 0, this.writeIndex);
+				}
 			}
 		}
 		return this.totalBytes;
@@ -154,6 +155,5 @@ public class LogRecorder implements ByteListener {
 	public synchronized void removeByteListener(ByteListener listener) {
 		this.listeners.add(listener);
 	}
-
 
 }

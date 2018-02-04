@@ -20,18 +20,26 @@ import java.util.logging.Logger;
 class ProcessWatcher {
 
 	private final ByteListener listener;
+	private final Object lock;
 	private Process process;
 	private final ExecutorService threadpool;
 	private PrintStream out = null;
 
-	public ProcessWatcher(ByteListener listener, ExecutorService threadpool) {
+	public ProcessWatcher(ByteListener listener, ExecutorService threadpool, Object lock) {
 		this.listener = listener;
 		this.threadpool = threadpool;
+		this.lock = lock;
 	}
 
-	public synchronized void start(List<String> commandLine, String directory) throws IOException {
-		if (process != null) {
+	public void start(List<String> commandLine, String directory) throws IOException {
+		if (!tryStart(commandLine, directory)) {
 			throw new IllegalStateException("Process already running");
+		}
+	}
+
+	public boolean tryStart(List<String> commandLine, String directory) throws IOException {
+		if (process != null) {
+			return false;
 		}
 		ProcessBuilder builder = new ProcessBuilder(commandLine);
 		builder.directory(new File(directory));
@@ -68,25 +76,40 @@ class ProcessWatcher {
 					Logger.getLogger(ProcessWatcher.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			} finally {
-				synchronized(this) {
+				synchronized (lock) {
 					this.process = null;
 					this.out = null;
 				}
 			}
 		});
+		return true;
 	}
 
-	public synchronized void kill() {
-		if (process == null) {
+	public void kill() {
+		if (!tryKill()) {
 			throw new IllegalStateException("Process already stopped");
 		}
-		this.process.destroy();
 	}
 
-	public synchronized void sendMessage(String cmd) {
-		if(this.out == null) {
-			throw new IllegalStateException("Pipe closed");
+	public boolean tryKill() {
+		if (process == null) {
+			return false;
+		}
+		this.process.destroy();
+		return true;
+	}
+
+	public boolean trySendMessage(String cmd) {
+		if (this.out == null) {
+			return false;
 		}
 		this.out.println(cmd);
+		return true;
+	}
+
+	public void sendMessage(String cmd) {
+		if (!trySendMessage(cmd)) {
+			throw new IllegalStateException("Pipe closed");
+		}
 	}
 }

@@ -5,7 +5,6 @@
  */
 package me.ferrybig.javacoding.servermanagerbackend;
 
-
 public interface ByteListener {
 
 	public void onIncomingBytes(byte[] bytes, int start, int end);
