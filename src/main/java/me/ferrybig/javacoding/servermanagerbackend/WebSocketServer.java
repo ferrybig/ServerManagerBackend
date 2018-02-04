@@ -17,6 +17,8 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public final class WebSocketServer {
@@ -36,7 +38,7 @@ public final class WebSocketServer {
 
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-        EventLoopGroup taskGroup = new NioEventLoopGroup();
+        ExecutorService taskGroup = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
 
 		Server server = new Server(new ServerConfig(
 				Arrays.asList("java", "-Dferrydebug=true", "-jar", "D:\\Servers-Active\\Test - kopie (2)\\spigot-1.12.jar"),
@@ -53,8 +55,6 @@ public final class WebSocketServer {
 
             System.out.println("Open your web browser and navigate to " +
                     (SSL? "https" : "http") + "://127.0.0.1:" + PORT + '/');
-
-			
 
             ch.closeFuture().sync();
         } finally {

@@ -27,7 +27,6 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
 
 	WebSocketFrameHandler(Server server) {
 		this.server = server;
-
 	}
 
 	private void sendBytes(byte[] data, int start, int end) {
@@ -58,6 +57,9 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
 			}
 			if(request.equals("stop")) {
 				server.stop();
+			}
+			if(request.startsWith("sendmessage")) {
+				server.sendMessage(request.substring("sendmessage ".length()));
 			}
         } else {
             String message = "unsupported frame type: " + frame.getClass().getName();

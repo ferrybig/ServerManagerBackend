@@ -48,5 +48,8 @@ public class Server {
 		return logFile;
 	}
 
+	public synchronized void sendMessage(String cmd) {
+		processWatcher.sendMessage(cmd);
+	}
 
 }

@@ -9,6 +9,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -20,7 +22,7 @@ class ProcessWatcher {
 	private final ByteListener listener;
 	private Process process;
 	private final ExecutorService threadpool;
-	private BufferedWriter out = null;
+	private PrintStream out = null;
 
 	public ProcessWatcher(ByteListener listener, ExecutorService threadpool) {
 		this.listener = listener;
@@ -37,6 +39,7 @@ class ProcessWatcher {
 		Process process = builder.start();
 		this.process = process;
 		InputStream in = this.process.getInputStream();
+		this.out = new PrintStream(process.getOutputStream(), true, "utf-8");
 		threadpool.submit(() -> {
 			try {
 				try {
@@ -67,6 +70,7 @@ class ProcessWatcher {
 			} finally {
 				synchronized(this) {
 					this.process = null;
+					this.out = null;
 				}
 			}
 		});
@@ -77,5 +81,12 @@ class ProcessWatcher {
 			throw new IllegalStateException("Process already stopped");
 		}
 		this.process.destroy();
+	}
+
+	public synchronized void sendMessage(String cmd) {
+		if(this.out == null) {
+			throw new IllegalStateException("Pipe closed");
+		}
+		this.out.println(cmd);
 	}
 }
