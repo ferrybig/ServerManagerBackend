@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author Fernando van Loenhout
  */
-public class LogRecorder {
+public class LogRecorder implements ByteListener {
 
 	/**
 	 * Buffer for current buffer view
@@ -37,14 +37,14 @@ public class LogRecorder {
 		this.buffer = new byte[size];
 	}
 
-	public void writeBytes(byte[] source, int start, int end) {
+	public void onIncomingBytes(byte[] source, int start, int end) {
 		if (end <= start) {
 			throw new IllegalArgumentException("end <= start");
 		}
 		int length = end - start;
 		if (length > buffer.length) {
-			writeBytes(source, start + buffer.length, end);
-			return;
+			start = end - buffer.length;
+			length = buffer.length;
 		}
 		synchronized (this) {
 			if (this.writeIndex + length >= buffer.length) {
@@ -155,9 +155,5 @@ public class LogRecorder {
 		this.listeners.add(listener);
 	}
 
-	public interface ByteListener {
-
-		public void onIncomingBytes(byte[] bytes, int start, int end);
-	}
 
 }

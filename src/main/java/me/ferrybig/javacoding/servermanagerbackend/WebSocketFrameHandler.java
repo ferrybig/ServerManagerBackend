@@ -23,10 +23,10 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
 
 	private static final Logger LOG = Logger.getLogger(WebSocketFrameHandler.class.getName());
 	private ChannelHandlerContext ctx;
-	private final LogRecorder logRecorder;
+	private final Server server;
 
-	WebSocketFrameHandler(LogRecorder logRecorder) {
-		this.logRecorder = logRecorder;
+	WebSocketFrameHandler(Server server) {
+		this.server = server;
 
 	}
 
@@ -51,7 +51,13 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
             LOG.info(MessageFormat.format("{0} received {1}", ctx.channel(), request));
 
 			if(request.equals("register")) {
-				logRecorder.addByteListener(this::sendBytes, true);
+				server.addByteListener(this::sendBytes, true);
+			}
+			if(request.equals("start")) {
+				server.start();
+			}
+			if(request.equals("stop")) {
+				server.stop();
 			}
         } else {
             String message = "unsupported frame type: " + frame.getClass().getName();

@@ -16,9 +16,7 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Arrays;
 
 
 public final class WebSocketServer {
@@ -36,32 +34,27 @@ public final class WebSocketServer {
             sslCtx = null;
         }
 
-		LogRecorder logRecorder = new LogRecorder();
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup taskGroup = new NioEventLoopGroup();
+
+		Server server = new Server(new ServerConfig(
+				Arrays.asList("java", "-Dferrydebug=true", "-jar", "D:\\Servers-Active\\Test - kopie (2)\\spigot-1.12.jar"),
+				"D:\\Servers-Active\\Test - kopie (2)"
+		), taskGroup);
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
              .channel(NioServerSocketChannel.class)
              .handler(new LoggingHandler(LogLevel.INFO))
-             .childHandler(new WebSocketServerInitializer(logRecorder, sslCtx));
+             .childHandler(new WebSocketServerInitializer(server, sslCtx));
 
             Channel ch = b.bind(PORT).sync().channel();
 
             System.out.println("Open your web browser and navigate to " +
                     (SSL? "https" : "http") + "://127.0.0.1:" + PORT + '/');
 
-			new Thread(() -> {
-				try {
-					byte[] buf = new byte[1024];
-					int length;
-					while((length = System.in.read(buf)) != 0) {
-						logRecorder.writeBytes(buf, 0, length);
-					}
-				} catch (IOException ex) {
-					Logger.getLogger(WebSocketServer.class.getName()).log(Level.SEVERE, null, ex);
-				}
-			}).start();
+			
 
             ch.closeFuture().sync();
         } finally {
