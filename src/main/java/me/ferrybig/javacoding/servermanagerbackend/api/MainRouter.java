@@ -3,10 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.ferrybig.javacoding.servermanagerbackend;
 
-public interface ByteListener {
+package me.ferrybig.javacoding.servermanagerbackend.api;
 
-	public void onIncomingBytes(byte[] bytes, int start, int end);
+public class MainRouter {
 
 }

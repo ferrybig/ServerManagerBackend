@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.ferrybig.javacoding.servermanagerbackend;
+package me.ferrybig.javacoding.servermanagerbackend.internal;
 
+import me.ferrybig.javacoding.servermanagerbackend.util.LogRecorder;
+import me.ferrybig.javacoding.servermanagerbackend.util.ProcessWatcher;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 

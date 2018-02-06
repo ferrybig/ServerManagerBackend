@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.ferrybig.javacoding.servermanagerbackend;
+package me.ferrybig.javacoding.servermanagerbackend.io;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

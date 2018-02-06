@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.ferrybig.javacoding.servermanagerbackend;
+package me.ferrybig.javacoding.servermanagerbackend.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import me.ferrybig.javacoding.servermanagerbackend.internal.ByteListener;
 
 /**
  *

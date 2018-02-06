@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.ferrybig.javacoding.servermanagerbackend;
+package me.ferrybig.javacoding.servermanagerbackend.util;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,8 +16,9 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import me.ferrybig.javacoding.servermanagerbackend.internal.ByteListener;
 
-class ProcessWatcher {
+public class ProcessWatcher {
 
 	private final ByteListener listener;
 	private final Object lock;

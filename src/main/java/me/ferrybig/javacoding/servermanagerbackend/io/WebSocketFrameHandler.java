@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.ferrybig.javacoding.servermanagerbackend;
+package me.ferrybig.javacoding.servermanagerbackend.io;
 
 import io.netty.buffer.ByteBuf;
 import java.util.Locale;
@@ -14,6 +14,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import java.text.MessageFormat;
 import java.util.logging.Logger;
+import me.ferrybig.javacoding.servermanagerbackend.internal.Server;
 
 /**
  * Echoes uppercase content of text frames.
