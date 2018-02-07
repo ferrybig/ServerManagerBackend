@@ -14,7 +14,7 @@ import com.google.gson.annotations.Expose;
 public abstract class Request {
 
 	@Expose
-	protected final Type type;
+	public final Type type;
 
 	@Expose
 	public String server;

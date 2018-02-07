@@ -5,6 +5,7 @@
  */
 package me.ferrybig.javacoding.servermanagerbackend.api.response;
 
+import com.google.gson.annotations.Expose;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.Request;
 
 /**
@@ -13,8 +14,12 @@ import me.ferrybig.javacoding.servermanagerbackend.api.request.Request;
  */
 public class StreamingResponse extends ReplyResponse {
 
-	public StreamingResponse(boolean success, Request request) {
+	@Expose
+	public int id;
+
+	public StreamingResponse(boolean success, Request request, int id) {
 		super(success, request, Type.STREAM);
+		this.id = id;
 	}
 
 }
