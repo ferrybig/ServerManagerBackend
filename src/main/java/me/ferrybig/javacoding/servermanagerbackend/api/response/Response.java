@@ -11,7 +11,7 @@ import com.google.gson.annotations.Expose;
  *
  * @author Fernando van Loenhout
  */
-public class Response {
+public abstract class Response {
 
 	@Expose
 	public boolean success;

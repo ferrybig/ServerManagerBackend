@@ -12,7 +12,7 @@ import me.ferrybig.javacoding.servermanagerbackend.api.request.Request;
  *
  * @author Fernando van Loenhout
  */
-public class ReplyResponse extends Response {
+public abstract class ReplyResponse extends Response {
 	@Expose
 	public Request request;
 

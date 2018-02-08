@@ -11,7 +11,7 @@ import com.google.gson.annotations.Expose;
  *
  * @author Fernando van Loenhout
  */
-public class ActionRequest extends Request {
+public class ActionRequest extends ServerRequest {
 
 	@Expose
 	public String action;
@@ -19,6 +19,6 @@ public class ActionRequest extends Request {
 	public String arguments;
 
 	public ActionRequest() {
-		super(Request.Type.ACTION);
+		super(ServerRequest.Type.ACTION);
 	}
 }

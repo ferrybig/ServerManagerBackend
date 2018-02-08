@@ -11,13 +11,12 @@ import com.google.gson.annotations.Expose;
  *
  * @author Fernando van Loenhout
  */
-public class ChannelRequest extends ServerRequest {
+public abstract class ServerRequest extends Request {
 
 	@Expose
-	public String channelName;
+	public String server;
 
-	public ChannelRequest() {
-		super(Type.REGISTER_CHANNEL);
+	public ServerRequest(Type type) {
+		super(type);
 	}
-
 }

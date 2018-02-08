@@ -9,7 +9,7 @@ package me.ferrybig.javacoding.servermanagerbackend.api.request;
  *
  * @author Fernando van Loenhout
  */
-public class InfoRequest extends Request {
+public class InfoRequest extends ServerRequest {
 
 	public InfoRequest() {
 		super(Type.INFO);

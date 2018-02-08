@@ -12,6 +12,8 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import me.ferrybig.javacoding.servermanagerbackend.internal.Server;
 
@@ -37,9 +39,12 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
 		}
 		pipeline.addLast(new HttpServerCodec());
 		pipeline.addLast(new HttpObjectAggregator(65536));
+		pipeline.addLast(new HttpCorsHandler());
 		pipeline.addLast(new WebSocketServerCompressionHandler());
 		pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH, null, true));
 		pipeline.addLast(new WebSocketIndexPageHandler());
+		pipeline.addLast(new LoggingHandler(LogLevel.INFO));
+		pipeline.addLast(new ResponseHandler());
 		pipeline.addLast(new WebSocketFrameHandler(server));
 	}
 }

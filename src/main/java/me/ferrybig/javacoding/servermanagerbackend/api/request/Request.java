@@ -16,9 +16,6 @@ public abstract class Request {
 	@Expose
 	public final Type type;
 
-	@Expose
-	public String server;
-
 	public Request(Type type) {
 		this.type = type;
 	}

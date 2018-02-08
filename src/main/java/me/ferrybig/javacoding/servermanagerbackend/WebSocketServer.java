@@ -5,9 +5,6 @@
  */
 package me.ferrybig.javacoding.servermanagerbackend;
 
-import me.ferrybig.javacoding.servermanagerbackend.internal.ServerConfig;
-import me.ferrybig.javacoding.servermanagerbackend.internal.Server;
-import me.ferrybig.javacoding.servermanagerbackend.io.WebSocketServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
@@ -21,11 +18,14 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import me.ferrybig.javacoding.servermanagerbackend.internal.Server;
+import me.ferrybig.javacoding.servermanagerbackend.internal.ServerConfig;
+import me.ferrybig.javacoding.servermanagerbackend.io.WebSocketServerInitializer;
 
 public final class WebSocketServer {
 
 	static final boolean SSL = System.getProperty("ssl") != null;
-	static final int PORT = Integer.parseInt(System.getProperty("port", SSL ? "8443" : "8080"));
+	static final int PORT = Integer.parseInt(System.getProperty("port", SSL ? "8443" : "8070"));
 
 	public static void main(String[] args) throws Exception {
 		// Configure SSL.
@@ -42,8 +42,8 @@ public final class WebSocketServer {
 		ExecutorService taskGroup = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
 
 		Server server = new Server(new ServerConfig(
-				Arrays.asList("java", "-Dferrydebug=true", "-jar", "D:\\Servers-Active\\Test - kopie (2)\\spigot-1.12.jar"),
-				"D:\\Servers-Active\\Test - kopie (2)"
+				Arrays.asList("java", "-Dferrydebug=true", "-jar", "C:\\Users\\fernando\\Downloads\\mc\\spigot-1.12.2.jar"),
+				"C:\\Users\\fernando\\Downloads\\mc"
 		), taskGroup);
 		try {
 			ServerBootstrap b = new ServerBootstrap();

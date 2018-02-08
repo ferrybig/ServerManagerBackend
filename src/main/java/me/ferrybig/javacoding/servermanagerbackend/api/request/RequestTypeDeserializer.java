@@ -15,11 +15,11 @@ import java.lang.reflect.Type;
  *
  * @author Fernando van Loenhout
  */
-public class RequestTypeDeserializer implements JsonDeserializer<Request.Type> {
+public class RequestTypeDeserializer implements JsonDeserializer<ServerRequest.Type> {
 
 	@Override
-	public Request.Type deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-		return Request.Type.valueOf(json.getAsString().toUpperCase());
+	public ServerRequest.Type deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		return ServerRequest.Type.valueOf(json.getAsString().toUpperCase());
 	}
 
 }

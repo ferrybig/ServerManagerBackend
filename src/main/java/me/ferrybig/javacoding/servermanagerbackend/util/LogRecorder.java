@@ -154,7 +154,7 @@ public class LogRecorder implements ByteListener {
 	}
 
 	public synchronized void removeByteListener(ByteListener listener) {
-		this.listeners.add(listener);
+		this.listeners.remove(listener);
 	}
 
 }
