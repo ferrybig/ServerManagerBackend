@@ -15,19 +15,19 @@ import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketSe
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
-import me.ferrybig.javacoding.servermanagerbackend.internal.Server;
+import me.ferrybig.javacoding.servermanagerbackend.internal.ServerManager;
 
 /**
  */
 public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel> {
 
 	private static final String WEBSOCKET_PATH = "/websocket";
-	private final Server server;
+	private final ServerManager serverManager;
 
 	private final SslContext sslCtx;
 
-	public WebSocketServerInitializer(Server server, SslContext sslCtx) {
-		this.server = server;
+	public WebSocketServerInitializer(ServerManager serverManager, SslContext sslCtx) {
+		this.serverManager = serverManager;
 		this.sslCtx = sslCtx;
 	}
 
@@ -45,6 +45,6 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
 		pipeline.addLast(new WebSocketIndexPageHandler());
 		pipeline.addLast(new LoggingHandler(LogLevel.INFO));
 		pipeline.addLast(new ResponseHandler());
-		pipeline.addLast(new WebSocketFrameHandler(server));
+		pipeline.addLast(new WebSocketFrameHandler(serverManager));
 	}
 }

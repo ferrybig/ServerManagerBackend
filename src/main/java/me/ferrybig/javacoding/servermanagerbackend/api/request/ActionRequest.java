@@ -19,6 +19,6 @@ public class ActionRequest extends ServerRequest {
 	public String arguments;
 
 	public ActionRequest() {
-		super(ServerRequest.Type.ACTION);
+		super(Type.ACTION);
 	}
 }

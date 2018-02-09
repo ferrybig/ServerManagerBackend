@@ -18,8 +18,8 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import me.ferrybig.javacoding.servermanagerbackend.internal.Server;
 import me.ferrybig.javacoding.servermanagerbackend.internal.ServerConfig;
+import me.ferrybig.javacoding.servermanagerbackend.internal.ServerManager;
 import me.ferrybig.javacoding.servermanagerbackend.io.WebSocketServerInitializer;
 
 public final class WebSocketServer {
@@ -41,16 +41,18 @@ public final class WebSocketServer {
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		ExecutorService taskGroup = Executors.newCachedThreadPool(Executors.defaultThreadFactory());
 
-		Server server = new Server(new ServerConfig(
+		ServerManager serverManager = new ServerManager(taskGroup);
+
+		serverManager.createServer("test", new ServerConfig(
 				Arrays.asList("java", "-Dferrydebug=true", "-jar", "C:\\Users\\fernando\\Downloads\\mc\\spigot-1.12.2.jar"),
 				"C:\\Users\\fernando\\Downloads\\mc"
-		), taskGroup);
+		));
 		try {
 			ServerBootstrap b = new ServerBootstrap();
 			b.group(bossGroup, workerGroup)
 					.channel(NioServerSocketChannel.class)
 					.handler(new LoggingHandler(LogLevel.INFO))
-					.childHandler(new WebSocketServerInitializer(server, sslCtx));
+					.childHandler(new WebSocketServerInitializer(serverManager, sslCtx));
 
 			Channel ch = b.bind(PORT).sync().channel();
 

@@ -20,6 +20,7 @@ import me.ferrybig.javacoding.servermanagerbackend.api.response.StreamingDataRes
 import me.ferrybig.javacoding.servermanagerbackend.api.response.StreamingResponse;
 import me.ferrybig.javacoding.servermanagerbackend.internal.ByteListener;
 import me.ferrybig.javacoding.servermanagerbackend.internal.Server;
+import me.ferrybig.javacoding.servermanagerbackend.internal.ServerManager;
 
 /**
  * Echoes uppercase content of text frames.
@@ -28,15 +29,12 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 
 	private static final Logger LOG = Logger.getLogger(WebSocketFrameHandler.class.getName());
 	private ChannelHandlerContext ctx;
-	private final Server server;
+	private final ServerManager serverManager;
 	private final Map<Integer, ListenerRegistration> listeners = new HashMap<>();
 	private int nextStreamId = 1;
 
-	WebSocketFrameHandler(Server server) {
-		this.server = server;
-	}
-
-	private void sendBytes(int id, byte[] data, int start, int end) {
+	WebSocketFrameHandler(ServerManager server) {
+		this.serverManager = server;
 	}
 
 	@Override
@@ -53,27 +51,33 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 	protected void channelRead0(ChannelHandlerContext ctx, Request req) throws Exception {
 		try {
 			final Response response;
+			
 			switch (req.type) {
 				case ACTION: {
 					ActionRequest action = (ActionRequest) req;
-					switch (action.action) {
-						case "start": {
-							response = new InstantResponse(true, req, "Starting server... " + server.tryStart());
+					Server server = this.serverManager.getServer(action.server);
+					if(server == null) {
+						response = new InstantResponse(false, req, "Server not found");
+					} else {
+						switch (action.action) {
+							case "start": {
+								response = new InstantResponse(true, req, "Starting server... " + server.tryStart());
+							}
+							break;
+							case "kill": {
+								response = new InstantResponse(true, req, "Stopping server... " + server.tryKill());
+							}
+							break;
+							case "send_command": {
+								server.sendMessage(action.arguments);
+								response = new InstantResponse(true, req, "Sending command...");
+							}
+							break;
+							default: {
+								response = new InstantResponse(false, req, "Reqeust action not implemented");
+							}
+							break;
 						}
-						break;
-						case "kill": {
-							response = new InstantResponse(true, req, "Stopping server... " + server.tryKill());
-						}
-						break;
-						case "send_command": {
-							server.sendMessage(action.arguments);
-							response = new InstantResponse(true, req, "Sending command...");
-						}
-						break;
-						default: {
-							response = new InstantResponse(false, req, "Reqeust action not implemented");
-						}
-						break;
 					}
 				}
 				break;
@@ -84,15 +88,18 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 				case KILL_STREAM: {
 					KillStreamRequest request = (KillStreamRequest) req;
 					ListenerRegistration registration = listeners.get(request.id);
-					server.removeByteListener(registration);
+					if(registration != null) {
+						registration.server.removeByteListener(registration);
+					}
 					response = new InstantResponse(true, req, "Killed!");
 				}
 				break;
 				case REGISTER_CHANNEL: {
 					ChannelRequest channelRequest = (ChannelRequest) req;
+					Server server = this.serverManager.getServer(channelRequest.server);
 					if ("console".equals(channelRequest.channelName)) {
 						int id = nextStreamId++;
-						ListenerRegistration registration = new ListenerRegistration(id, ctx);
+						ListenerRegistration registration = new ListenerRegistration(server, id, ctx);
 						listeners.put(id, registration);
 						ctx.writeAndFlush(new StreamingResponse(true, req, id));
 						// Set response to null here because timing matters here.
@@ -119,10 +126,12 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 
 	private class ListenerRegistration implements ByteListener {
 
+		private final Server server;
 		private final int id;
 		private final ChannelHandlerContext ctx;
 
-		public ListenerRegistration(int id, ChannelHandlerContext ctx) {
+		public ListenerRegistration(Server server, int id, ChannelHandlerContext ctx) {
+			this.server = server;
 			this.id = id;
 			this.ctx = ctx;
 		}
