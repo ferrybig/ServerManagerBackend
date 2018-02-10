@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.ActionRequest;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.ChannelRequest;
+import me.ferrybig.javacoding.servermanagerbackend.api.request.InfoRequest;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.KillStreamRequest;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.Request;
 import me.ferrybig.javacoding.servermanagerbackend.api.response.InstantResponse;
@@ -51,12 +52,12 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 	protected void channelRead0(ChannelHandlerContext ctx, Request req) throws Exception {
 		try {
 			final Response response;
-			
+
 			switch (req.type) {
 				case ACTION: {
 					ActionRequest action = (ActionRequest) req;
 					Server server = this.serverManager.getServer(action.server);
-					if(server == null) {
+					if (server == null) {
 						response = new InstantResponse(false, req, "Server not found");
 					} else {
 						switch (action.action) {
@@ -82,13 +83,19 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 				}
 				break;
 				case INFO: {
-					response = new InstantResponse(false, req, "Reqeust info not implemented");
+					InfoRequest info = (InfoRequest) req;
+					Server server = this.serverManager.getServer(info.server);
+					if (server == null) {
+						response = new InstantResponse(false, req, "Server not found");
+					} else {
+						response = new InstantResponse(true, req, server.getConfig());
+					}
 				}
 				break;
 				case KILL_STREAM: {
 					KillStreamRequest request = (KillStreamRequest) req;
 					ListenerRegistration registration = listeners.get(request.id);
-					if(registration != null) {
+					if (registration != null) {
 						registration.server.removeByteListener(registration);
 					}
 					response = new InstantResponse(true, req, "Killed!");

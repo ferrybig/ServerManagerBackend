@@ -5,6 +5,8 @@
  */
 package me.ferrybig.javacoding.servermanagerbackend.internal;
 
+import com.google.gson.GsonBuilder;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,14 +14,16 @@ public class ServerConfig {
 
 	private final List<String> commandLine;
 	private final String directory;
+	private final List<String> shutdownCommands;
 
 	public ServerConfig() {
-		this(Collections.emptyList(), "");
+		this(Collections.emptyList(), "", Arrays.asList("stop"));
 	}
 
-	public ServerConfig(List<String> commandLine, String directory) {
+	public ServerConfig(List<String> commandLine, String directory, List<String> shutdownCommands) {
 		this.commandLine = commandLine;
 		this.directory = directory;
+		this.shutdownCommands = shutdownCommands;
 	}
 
 	public List<String> getCommandLine() {
@@ -30,9 +34,13 @@ public class ServerConfig {
 		return directory;
 	}
 
+	public List<String> getShutdownCommands() {
+		return shutdownCommands;
+	}
+
 	@Override
 	public String toString() {
-		return "ServerConfig{" + "commandLine=" + commandLine + ", directory=" + directory + '}';
+		return new GsonBuilder().setPrettyPrinting().create().toJson(this);
 	}
 
 }
