@@ -44,8 +44,14 @@ public final class WebSocketServer {
 		ServerManager serverManager = new ServerManager(taskGroup);
 
 		serverManager.createServer("test", new ServerConfig(
-				Arrays.asList("java", "-Dferrydebug=true", "-jar", "C:\\Users\\fernando\\Downloads\\mc\\spigot-1.12.2.jar"),
-				"C:\\Users\\fernando\\Downloads\\mc"
+				Arrays.asList("java", "-jar", "C:\\Users\\fernando\\Downloads\\mc\\spigot-1.12.2.jar"),
+				"C:\\Users\\fernando\\Downloads\\mc",
+				Arrays.asList("say server shutting down", "stop")
+		));
+		serverManager.createServer("test1", new ServerConfig(
+				Arrays.asList("java", "-jar", "D:\\Servers-Active\\Test - kopie (2)\\spigot-1.12.jar"),
+				"D:\\Servers-Active\\Test - kopie (2)",
+				Arrays.asList("say server shutting down", "stop")
 		));
 		try {
 			ServerBootstrap b = new ServerBootstrap();
