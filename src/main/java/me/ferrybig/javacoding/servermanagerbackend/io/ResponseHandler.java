@@ -23,13 +23,13 @@ import me.ferrybig.javacoding.servermanagerbackend.api.response.Response;
 public class ResponseHandler extends ChannelDuplexHandler {
 
 	private static final Gson JSON_PARSER = new GsonBuilder()
-		.registerTypeAdapter(Request.class, new RequestDeserializer())
-		.registerTypeAdapter(Request.Type.class, new RequestTypeDeserializer())
-		.create();
+			.registerTypeAdapter(Request.class, new RequestDeserializer())
+			.registerTypeAdapter(Request.Type.class, new RequestTypeDeserializer())
+			.create();
 
 	@Override
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-		if(msg instanceof Response) {
+		if (msg instanceof Response) {
 			msg = new TextWebSocketFrame(JSON_PARSER.toJson(msg));
 		}
 		ctx.write(msg, promise);
@@ -37,7 +37,7 @@ public class ResponseHandler extends ChannelDuplexHandler {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		if(msg instanceof TextWebSocketFrame) {
+		if (msg instanceof TextWebSocketFrame) {
 			String json = ((TextWebSocketFrame) msg).text();
 			((TextWebSocketFrame) msg).release();
 			msg = JSON_PARSER.fromJson(json, Request.class);

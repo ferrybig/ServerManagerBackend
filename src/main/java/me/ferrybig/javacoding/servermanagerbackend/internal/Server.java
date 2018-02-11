@@ -15,12 +15,14 @@ public class Server {
 	private final ServerConfig config;
 	private final LogRecorder logFile;
 	private final ProcessWatcher processWatcher;
+	protected final StateWatcher stateWatcher;
 	private volatile boolean locked = false;
 
 	public Server(ServerConfig config, ExecutorService threadpool) {
 		this.config = config;
 		this.logFile = new LogRecorder();
-		this.processWatcher = new ProcessWatcher(logFile, threadpool, this);
+		this.stateWatcher = new StateWatcher();
+		this.processWatcher = new ProcessWatcher(logFile, this.stateWatcher, threadpool, this);
 	}
 
 	public synchronized void start() throws IOException {
@@ -59,7 +61,7 @@ public class Server {
 		this.locked = false;
 	}
 
-	public long addByteListener(ByteListener listener) {
+	public synchronized long addByteListener(ByteListener listener) {
 		return logFile.addByteListener(listener);
 	}
 
@@ -69,6 +71,14 @@ public class Server {
 
 	public synchronized void removeByteListener(ByteListener listener) {
 		logFile.removeByteListener(listener);
+	}
+
+	public void addStateListener(StateListener listener) {
+		stateWatcher.addListener(listener);
+	}
+
+	public void removeStateListener(StateListener listener) {
+		stateWatcher.removeListener(listener);
 	}
 
 	public ServerConfig getConfig() {

@@ -17,17 +17,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.ferrybig.javacoding.servermanagerbackend.internal.ByteListener;
+import me.ferrybig.javacoding.servermanagerbackend.internal.StateListener;
+import me.ferrybig.javacoding.servermanagerbackend.internal.StateListener.State;
 
 public class ProcessWatcher {
 
 	private final ByteListener listener;
 	private final Object lock;
 	private Process process;
+	private final StateListener stateListener;
 	private final ExecutorService threadpool;
 	private PrintStream out = null;
 
-	public ProcessWatcher(ByteListener listener, ExecutorService threadpool, Object lock) {
+	public ProcessWatcher(ByteListener listener, StateListener stateListener, ExecutorService threadpool, Object lock) {
 		this.listener = listener;
+		this.stateListener = stateListener;
 		this.threadpool = threadpool;
 		this.lock = lock;
 	}
@@ -36,6 +40,10 @@ public class ProcessWatcher {
 		if (!tryStart(commandLine, directory)) {
 			throw new IllegalStateException("Process already running");
 		}
+	}
+
+	public void onStateChange(State state) {
+		this.stateListener.onStateChange(state);
 	}
 
 	public boolean tryStart(List<String> commandLine, String directory) throws IOException {
@@ -49,9 +57,11 @@ public class ProcessWatcher {
 		this.process = process;
 		InputStream in = this.process.getInputStream();
 		this.out = new PrintStream(process.getOutputStream(), true, "utf-8");
+		onStateChange(State.PREPARE_START);
 		threadpool.submit(() -> {
 			try {
 				try {
+					onStateChange(State.STARTED);
 					int length;
 					byte[] buffer = new byte[1024];
 					while ((length = in.read(buffer)) > 0) {
@@ -71,6 +81,9 @@ public class ProcessWatcher {
 					if (code != 0) {
 						byte[] message = ("\n\nProcess exited with code: " + code + "\n\n").getBytes(StandardCharsets.UTF_8);
 						listener.onIncomingBytes(message, 0, message.length);
+						onStateChange(State.CRASHED);
+					} else {
+						onStateChange(State.STOPPED);
 					}
 				} catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();

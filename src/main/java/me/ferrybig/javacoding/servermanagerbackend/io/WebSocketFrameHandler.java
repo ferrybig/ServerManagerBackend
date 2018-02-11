@@ -22,6 +22,7 @@ import me.ferrybig.javacoding.servermanagerbackend.api.response.StreamingRespons
 import me.ferrybig.javacoding.servermanagerbackend.internal.ByteListener;
 import me.ferrybig.javacoding.servermanagerbackend.internal.Server;
 import me.ferrybig.javacoding.servermanagerbackend.internal.ServerManager;
+import me.ferrybig.javacoding.servermanagerbackend.internal.StateListener;
 
 /**
  * Echoes uppercase content of text frames.
@@ -46,6 +47,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 	@Override
 	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 		super.channelReadComplete(ctx);
+		ctx.flush();
 	}
 
 	@Override
@@ -96,7 +98,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 					KillStreamRequest request = (KillStreamRequest) req;
 					ListenerRegistration registration = listeners.get(request.id);
 					if (registration != null) {
-						registration.server.removeByteListener(registration);
+						registration.cancel();
 					}
 					response = new InstantResponse(true, req, "Killed!");
 				}
@@ -106,12 +108,20 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 					Server server = this.serverManager.getServer(channelRequest.server);
 					if ("console".equals(channelRequest.channelName)) {
 						int id = nextStreamId++;
-						ListenerRegistration registration = new ListenerRegistration(server, id, ctx);
+						ByteListenerRegistration registration = new ByteListenerRegistration(server, id, ctx);
 						listeners.put(id, registration);
-						ctx.writeAndFlush(new StreamingResponse(true, req, id));
+						ctx.write(new StreamingResponse(true, req, id));
 						// Set response to null here because timing matters here.
 						response = null;
 						server.addByteListener(registration, true);
+					} else if ("state".equals(channelRequest.channelName)) {
+						int id = nextStreamId++;
+						StateListenerRegistration registration = new StateListenerRegistration(server, id, ctx);
+						listeners.put(id, registration);
+						ctx.write(new StreamingResponse(true, req, id));
+						// Set response to null here because timing matters here.
+						response = null;
+						server.addStateListener(registration);
 					} else {
 						response = new InstantResponse(false, req, "Reqeust channel not implemented");
 					}
@@ -123,7 +133,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 				break;
 			}
 			if (response != null) {
-				ctx.writeAndFlush(response);
+				ctx.write(response);
 			}
 		} catch (Exception e) {
 			ctx.writeAndFlush(new InstantResponse(false, req, "Exception during execution of your command"));
@@ -131,21 +141,55 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 		}
 	}
 
-	private class ListenerRegistration implements ByteListener {
+	private static abstract interface ListenerRegistration {
+
+		void cancel();
+	}
+
+	private class ByteListenerRegistration implements ByteListener, ListenerRegistration {
 
 		private final Server server;
 		private final int id;
 		private final ChannelHandlerContext ctx;
 
-		public ListenerRegistration(Server server, int id, ChannelHandlerContext ctx) {
+		public ByteListenerRegistration(Server server, int id, ChannelHandlerContext ctx) {
 			this.server = server;
 			this.id = id;
 			this.ctx = ctx;
 		}
 
 		@Override
+		public void cancel() {
+			server.removeByteListener(this);
+		}
+
+		@Override
 		public void onIncomingBytes(byte[] bytes, int start, int end) {
 			this.ctx.writeAndFlush(new StreamingDataResponse(true, id, new String(bytes, start, end - start), true));
+		}
+
+	}
+
+	private class StateListenerRegistration implements StateListener, ListenerRegistration {
+
+		private final Server server;
+		private final int id;
+		private final ChannelHandlerContext ctx;
+
+		public StateListenerRegistration(Server server, int id, ChannelHandlerContext ctx) {
+			this.server = server;
+			this.id = id;
+			this.ctx = ctx;
+		}
+
+		@Override
+		public void cancel() {
+			server.removeStateListener(this);
+		}
+
+		@Override
+		public void onStateChange(State newState) {
+			this.ctx.writeAndFlush(new StreamingDataResponse(true, id, newState, true));
 		}
 
 	}

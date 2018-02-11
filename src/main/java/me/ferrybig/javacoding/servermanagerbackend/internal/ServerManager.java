@@ -26,7 +26,7 @@ public class ServerManager {
 	public Server createServer(String id, ServerConfig config) {
 		synchronized (changeLock) {
 			Server server = servers.get(id);
-			if(server != null) {
+			if (server != null) {
 				throw new IllegalArgumentException("Server already exists with id");
 			}
 			server = new Server(config, taskGroup);
@@ -38,7 +38,7 @@ public class ServerManager {
 	public boolean deleteServer(String id) {
 		synchronized (changeLock) {
 			Server server = servers.get(id);
-			if(server == null) {
+			if (server == null) {
 				return false;
 			}
 			synchronized (server) {
