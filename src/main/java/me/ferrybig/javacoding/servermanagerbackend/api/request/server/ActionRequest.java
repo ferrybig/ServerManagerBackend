@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.ferrybig.javacoding.servermanagerbackend.api.request;
+package me.ferrybig.javacoding.servermanagerbackend.api.request.server;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  *
@@ -14,11 +15,20 @@ import com.google.gson.annotations.Expose;
 public class ActionRequest extends ServerRequest {
 
 	@Expose
-	public String action;
+	public Action action;
 	@Expose
 	public String arguments;
 
 	public ActionRequest() {
-		super(Type.ACTION);
+		super(Type.SERVER_ACTION);
+	}
+
+	public enum Action {
+		@SerializedName("start")
+		START,
+		@SerializedName("kill")
+		KILL,
+		@SerializedName("send_command")
+		SEND_COMMAND
 	}
 }

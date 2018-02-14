@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.ferrybig.javacoding.servermanagerbackend.api.request;
+package me.ferrybig.javacoding.servermanagerbackend.api.request.server;
 
 /**
  *
@@ -12,7 +12,7 @@ package me.ferrybig.javacoding.servermanagerbackend.api.request;
 public class InfoRequest extends ServerRequest {
 
 	public InfoRequest() {
-		super(Type.INFO);
+		super(Type.SERVER_INFO);
 	}
 
 }

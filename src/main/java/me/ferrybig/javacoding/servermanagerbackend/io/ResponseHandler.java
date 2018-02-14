@@ -13,7 +13,6 @@ import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.Request;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.RequestDeserializer;
-import me.ferrybig.javacoding.servermanagerbackend.api.request.RequestTypeDeserializer;
 import me.ferrybig.javacoding.servermanagerbackend.api.response.Response;
 
 /**
@@ -24,7 +23,6 @@ public class ResponseHandler extends ChannelDuplexHandler {
 
 	private static final Gson JSON_PARSER = new GsonBuilder()
 			.registerTypeAdapter(Request.class, new RequestDeserializer())
-			.registerTypeAdapter(Request.Type.class, new RequestTypeDeserializer())
 			.create();
 
 	@Override

@@ -10,11 +10,11 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-import me.ferrybig.javacoding.servermanagerbackend.api.request.ActionRequest;
-import me.ferrybig.javacoding.servermanagerbackend.api.request.ChannelRequest;
-import me.ferrybig.javacoding.servermanagerbackend.api.request.InfoRequest;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.KillStreamRequest;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.Request;
+import me.ferrybig.javacoding.servermanagerbackend.api.request.server.ActionRequest;
+import me.ferrybig.javacoding.servermanagerbackend.api.request.server.ChannelRequest;
+import me.ferrybig.javacoding.servermanagerbackend.api.request.server.InfoRequest;
 import me.ferrybig.javacoding.servermanagerbackend.api.response.InstantResponse;
 import me.ferrybig.javacoding.servermanagerbackend.api.response.Response;
 import me.ferrybig.javacoding.servermanagerbackend.api.response.StreamingDataResponse;
@@ -56,22 +56,22 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 			final Response response;
 
 			switch (req.type) {
-				case ACTION: {
+				case SERVER_ACTION: {
 					ActionRequest action = (ActionRequest) req;
 					Server server = this.serverManager.getServer(action.server);
 					if (server == null) {
 						response = new InstantResponse(false, req, "Server not found");
 					} else {
 						switch (action.action) {
-							case "start": {
+							case START: {
 								response = new InstantResponse(true, req, "Starting server... " + server.tryStart());
 							}
 							break;
-							case "kill": {
+							case KILL: {
 								response = new InstantResponse(true, req, "Stopping server... " + server.tryKill());
 							}
 							break;
-							case "send_command": {
+							case SEND_COMMAND: {
 								server.sendMessage(action.arguments);
 								response = new InstantResponse(true, req, "Sending command...");
 							}
@@ -84,7 +84,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 					}
 				}
 				break;
-				case INFO: {
+				case SERVER_INFO: {
 					InfoRequest info = (InfoRequest) req;
 					Server server = this.serverManager.getServer(info.server);
 					if (server == null) {
@@ -103,7 +103,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 					response = new InstantResponse(true, req, "Killed!");
 				}
 				break;
-				case REGISTER_CHANNEL: {
+				case SERVER_LISTEN: {
 					ChannelRequest channelRequest = (ChannelRequest) req;
 					Server server = this.serverManager.getServer(channelRequest.server);
 					if ("console".equals(channelRequest.channelName)) {

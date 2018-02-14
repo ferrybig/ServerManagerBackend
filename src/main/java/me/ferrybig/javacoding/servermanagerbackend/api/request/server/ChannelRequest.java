@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.ferrybig.javacoding.servermanagerbackend.api.request;
+package me.ferrybig.javacoding.servermanagerbackend.api.request.server;
 
 import com.google.gson.annotations.Expose;
 
@@ -11,12 +11,13 @@ import com.google.gson.annotations.Expose;
  *
  * @author Fernando van Loenhout
  */
-public abstract class ServerRequest extends Request {
+public class ChannelRequest extends ServerRequest {
 
 	@Expose
-	public String server;
+	public String channelName;
 
-	public ServerRequest(Type type) {
-		super(type);
+	public ChannelRequest() {
+		super(Type.SERVER_LISTEN);
 	}
+
 }

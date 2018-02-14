@@ -6,6 +6,11 @@
 package me.ferrybig.javacoding.servermanagerbackend.api.request;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+import me.ferrybig.javacoding.servermanagerbackend.api.request.server.ListRequest;
+import me.ferrybig.javacoding.servermanagerbackend.api.request.server.ActionRequest;
+import me.ferrybig.javacoding.servermanagerbackend.api.request.server.ChannelRequest;
+import me.ferrybig.javacoding.servermanagerbackend.api.request.server.InfoRequest;
 
 /**
  *
@@ -21,9 +26,15 @@ public abstract class Request {
 	}
 
 	public enum Type {
-		ACTION(ActionRequest.class),
-		INFO(InfoRequest.class),
-		REGISTER_CHANNEL(ChannelRequest.class),
+		@SerializedName("server_list")
+		SERVER_LIST(ListRequest.class),
+		@SerializedName("server_action")
+		SERVER_ACTION(ActionRequest.class),
+		@SerializedName("server_info")
+		SERVER_INFO(InfoRequest.class),
+		@SerializedName("server_listen")
+		SERVER_LISTEN(ChannelRequest.class),
+		@SerializedName("kill_stream")
 		KILL_STREAM(KillStreamRequest.class);
 
 		private final Class<? extends Request> type;
