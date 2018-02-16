@@ -10,5 +10,4 @@ package me.ferrybig.javacoding.servermanagerbackend.internal.config;
  * @author Fernando van Loenhout
  */
 public class ConfigBuilder {
-
 }

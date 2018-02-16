@@ -12,5 +12,6 @@ package me.ferrybig.javacoding.servermanagerbackend.internal.config;
 public interface ConfigKey<T> {
 	boolean allowsEmptyValue();
 	String getDescription();
-	ConfigFormat<? super T> getFormat();
+	String getGroup();
+	ConfigFormat<? extends T> getFormat();
 }

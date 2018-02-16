@@ -17,11 +17,13 @@ public class DefaultConfigKey<T> implements ConfigKey<T>{
 
 	private final ConfigFormat<T> format;
 	private final String description;
+	private final String group;
 
-	public DefaultConfigKey(String name, boolean allowsEmptyValue, ConfigFormat<T> format, String description) {
+	public DefaultConfigKey(String group, String name, boolean allowsEmptyValue, ConfigFormat<T> format, String description) {
 		this.description = Objects.requireNonNull(description, "description");
 		this.allowsEmptyValue = allowsEmptyValue;
 		this.format = Objects.requireNonNull(format, "format");
+		this.group = group;
 	}
 
 	@Override
@@ -35,7 +37,12 @@ public class DefaultConfigKey<T> implements ConfigKey<T>{
 	}
 
 	@Override
-	public ConfigFormat<? super T> getFormat() {
+	public ConfigFormat<? extends T> getFormat() {
 		return format;
+	}
+
+	@Override
+	public String getGroup() {
+		return group;
 	}
 }

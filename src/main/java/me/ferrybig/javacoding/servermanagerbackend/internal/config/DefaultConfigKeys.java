@@ -9,8 +9,10 @@ package me.ferrybig.javacoding.servermanagerbackend.internal.config;
  *
  * @author Fernando van Loenhout
  */
-public class DefaultConfigKeys {
-	public static final String WORKING_DIRECTORY_NAME = "working_directory";
+public interface DefaultConfigKeys {
 	public static final ConfigKey<String> WORKING_DIRECTORY = new DefaultConfigKey<>(
-			WORKING_DIRECTORY_NAME, false, ConfigFormat.SERVER_FILE, "Working directory for the server");
+			"default", "working_directory", false, ConfigFormat.SERVER_FILE, "Working directory for the server");
+
+	public static final ConfigKey<String> START_COMMAND = new DefaultConfigKey<>(
+			"default", "start_command", false, ConfigFormat.STRING, "Start command for the server");
 }
