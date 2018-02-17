@@ -10,49 +10,64 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author Fernando van Loenhout
  */
 public class ConfigFormat<T> {
+
 	public static final ConfigFormat<String> STRING = new ConfigFormat<>(
-			Pattern.compile(""), "string", "", Function.identity());
+		Pattern.compile("[^\n]*"), "string", "", Function.identity());
+	
+	public static final ConfigFormat<List<String>> STRING_LIST = new ConfigFormat<>(
+		Pattern.compile("[^\0\n]*(\0[^\0\n]*)*"), "list", "string",
+		s -> Arrays.asList(s.split("\0")),
+		a -> a.stream().collect(Collectors.joining("\0")));
 
 	public static final ConfigFormat<String> SERVER_FILE = new ConfigFormat<>(
-			Pattern.compile(""), "string", "server_file", Function.identity());
+		Pattern.compile("[^\n]*"), "string", "server_file", Function.identity());
 
 	public static final ConfigFormat<Integer> PORT = new ConfigFormat<>(
-			Pattern.compile("-?\\d+"), "ip", "port", Integer::parseInt);
+		Pattern.compile("-?\\d+"), "ip", "port", Integer::parseInt);
 
 	public static final ConfigFormat<Integer> IP_ADDRESS = new ConfigFormat<>(
-			Pattern.compile("(\\[[0-9a-fA-F:]+\\]|[0-9.]+)"), "ip", "address", Integer::parseInt);
+		Pattern.compile("(\\[[0-9a-fA-F:]+\\]|[0-9.]+)"), "ip", "address", Integer::parseInt);
 
 	public static final ConfigFormat<Double> DOUBLE = new ConfigFormat<>(
-			Pattern.compile("-?\\d*(\\.\\d+)?"), "number", "double", Double::parseDouble);
+		Pattern.compile("-?\\d*(\\.\\d+)?"), "number", "double", Double::parseDouble);
 
 	public static final ConfigFormat<Float> FLOAT = new ConfigFormat<>(
-			Pattern.compile("-?\\d*(\\.\\d+)?"), "number", "float", Float::parseFloat);
+		Pattern.compile("-?\\d*(\\.\\d+)?"), "number", "float", Float::parseFloat);
 
 	public static final ConfigFormat<Integer> INTEGER = new ConfigFormat<>(
-			Pattern.compile("-?\\d+"), "number", "int", Integer::parseInt);
+		Pattern.compile("-?\\d+"), "number", "int", Integer::parseInt);
 
 	public static final ConfigFormat<Long> LONG = new ConfigFormat<>(
-			Pattern.compile("-?\\d+"), "number", "long", Long::parseLong);
+		Pattern.compile("-?\\d+"), "number", "long", Long::parseLong);
 
 	private final Pattern regex;
 	private final String name;
 	private final String subName;
 	private final Function<String, T> convertor;
+	private final Function<T, String> deconvertor;
 
 	public ConfigFormat(Pattern regex, String name, String subName, Function<String, T> convertor) {
+		this(regex, name, subName, convertor, Object::toString);
+	}
+
+	public ConfigFormat(Pattern regex, String name, String subName, Function<String, T> convertor, Function<T, String> deconvertor) {
 		this.regex = regex;
 		this.name = name;
 		this.subName = subName;
 		this.convertor = convertor;
+		this.deconvertor = deconvertor;
 	}
 
 	public Pattern getRegex() {
@@ -71,9 +86,13 @@ public class ConfigFormat<T> {
 		return convertor.apply(input);
 	}
 
+	public String deconvert(T input) {
+		return deconvertor.apply(input);
+	}
+
 	public boolean validate(String input) {
 		Matcher matcher = this.regex.matcher(input);
-		if(!matcher.matches()) {
+		if (!matcher.matches()) {
 			return false;
 		}
 		return true;

@@ -13,7 +13,7 @@ import me.ferrybig.javacoding.servermanagerbackend.api.request.Request;
  * @author Fernando van Loenhout
  */
 public class ListRequest extends Request {
-	
+
 	@SerializedName("object_type")
 	public ObjectType objectType;
 

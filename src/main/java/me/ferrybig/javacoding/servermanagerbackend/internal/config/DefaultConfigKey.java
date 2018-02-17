@@ -11,16 +11,17 @@ import java.util.Objects;
  *
  * @author Fernando van Loenhout
  */
-public class DefaultConfigKey<T> implements ConfigKey<T>{
+public class DefaultConfigKey<T> implements ConfigKey<T> {
 
+	private final String group;
+	private final String name;
 	private final boolean allowsEmptyValue;
-
 	private final ConfigFormat<T> format;
 	private final String description;
-	private final String group;
 
 	public DefaultConfigKey(String group, String name, boolean allowsEmptyValue, ConfigFormat<T> format, String description) {
 		this.description = Objects.requireNonNull(description, "description");
+		this.name = name;
 		this.allowsEmptyValue = allowsEmptyValue;
 		this.format = Objects.requireNonNull(format, "format");
 		this.group = group;
@@ -37,12 +38,17 @@ public class DefaultConfigKey<T> implements ConfigKey<T>{
 	}
 
 	@Override
-	public ConfigFormat<? extends T> getFormat() {
+	public ConfigFormat<T> getFormat() {
 		return format;
 	}
 
 	@Override
 	public String getGroup() {
 		return group;
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 }

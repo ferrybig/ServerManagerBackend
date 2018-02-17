@@ -14,6 +14,8 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.Request;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.RequestDeserializer;
 import me.ferrybig.javacoding.servermanagerbackend.api.response.Response;
+import me.ferrybig.javacoding.servermanagerbackend.internal.config.ServerConfig;
+import me.ferrybig.javacoding.servermanagerbackend.util.GenericTypeAdaptorFactory;
 
 /**
  *
@@ -22,8 +24,9 @@ import me.ferrybig.javacoding.servermanagerbackend.api.response.Response;
 public class ResponseHandler extends ChannelDuplexHandler {
 
 	private static final Gson JSON_PARSER = new GsonBuilder()
-			.registerTypeAdapter(Request.class, new RequestDeserializer())
-			.create();
+		.registerTypeAdapter(Request.class, new RequestDeserializer())
+		.registerTypeAdapterFactory(new GenericTypeAdaptorFactory<>(ServerConfig::typeAdapter, ServerConfig.class))
+		.create();
 
 	@Override
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {

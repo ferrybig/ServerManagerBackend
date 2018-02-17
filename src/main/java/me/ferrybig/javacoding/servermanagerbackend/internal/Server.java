@@ -8,7 +8,10 @@ package me.ferrybig.javacoding.servermanagerbackend.internal;
 import me.ferrybig.javacoding.servermanagerbackend.util.LogRecorder;
 import me.ferrybig.javacoding.servermanagerbackend.util.ProcessWatcher;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
+import me.ferrybig.javacoding.servermanagerbackend.internal.config.DefaultConfigKeys;
+import me.ferrybig.javacoding.servermanagerbackend.internal.config.ServerConfig;
 
 public class Server {
 
@@ -26,17 +29,18 @@ public class Server {
 	}
 
 	public synchronized void start() throws IOException {
-		if (locked) {
-			throw new IllegalStateException("Server locked");
+		if (!tryStart()) {
+			throw new IllegalStateException("Server already started");
 		}
-		this.processWatcher.start(this.config.getCommandLine(), this.config.getDirectory());
 	}
 
 	public synchronized boolean tryStart() throws IOException {
 		if (locked) {
 			return false;
 		}
-		return this.processWatcher.tryStart(this.config.getCommandLine(), this.config.getDirectory());
+		return this.processWatcher.tryStart(
+			this.config.getValue(DefaultConfigKeys.START_COMMAND).get(),
+			this.config.getValue(DefaultConfigKeys.WORKING_DIRECTORY).get());
 	}
 
 	public synchronized void kill() throws IOException {

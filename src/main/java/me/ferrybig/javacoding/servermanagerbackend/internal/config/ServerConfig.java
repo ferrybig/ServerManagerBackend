@@ -5,20 +5,79 @@
  */
 package me.ferrybig.javacoding.servermanagerbackend.internal.config;
 
+import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author Fernando van Loenhout
  */
 public class ServerConfig {
-	private final Map<ConfigKey<?>, String> config = new HashMap<>();
-	private final Map<String, ConfigKey<?>> keyMapping = new HashMap<>();
 
-	public <T> T getValue(ConfigKey<? extends T> key) {
-		return key.getFormat().convert(this.config.get(key));
+	private final Map<ConfigKey<?>, String> config;
+	private final Map<String, Map<String, ConfigKey<?>>> keyMapping;
+
+	public ServerConfig(Map<ConfigKey<?>, String> config, Map<String, Map<String, ConfigKey<?>>> keyMapping) {
+		this.config = config;
+		this.keyMapping = keyMapping;
 	}
 
+	public <T> Optional<T> getValue(ConfigKey<? extends T> key) {
+		String value = this.config.get(key);
+		if (value == null) {
+			return Optional.empty();
+		}
+		return Optional.of(key.getFormat().convert(value));
+	}
+
+	public synchronized <T> void setValue(ConfigKey<T> key, T value) {
+		this.config.put(key, key.getFormat().deconvert(value));
+	}
+
+	public static TypeAdapter<ServerConfig> typeAdapter(Gson gson) {
+		TypeAdapter<ConfigKey<?>> keyAdaptor = ConfigKey.typeAdapter(gson);
+
+		return new TypeAdapter<ServerConfig>() {
+			@Override
+			public void write(JsonWriter out, ServerConfig value) throws IOException {
+				out.beginObject();
+				out.name("format");
+				out.beginObject();
+				for (ConfigKey<?> key : value.config.keySet()) {
+					out.name(key.getName());
+					keyAdaptor.write(out, key);
+				}
+				out.endObject();
+				out.name("values");
+				out.beginObject();
+				Map<String, List<Map.Entry<ConfigKey<?>, String>>> values = value.config.entrySet().stream().collect(Collectors.groupingBy(e -> e.getKey().getGroup()));
+				for (Map.Entry<String, List<Map.Entry<ConfigKey<?>, String>>> entry : values.entrySet()) {
+					out.name(entry.getKey());
+					out.beginObject();
+					for (Map.Entry<ConfigKey<?>, String> innerValues : entry.getValue()) {
+						out.name(innerValues.getKey().getName());
+						out.value(innerValues.getValue());
+					}
+					out.endObject();
+				}
+				out.endObject();
+				out.endObject();
+			}
+
+			@Override
+			public ServerConfig read(JsonReader in) throws IOException {
+				throw new IOException("ConfigFormat cannot be read yet");
+			}
+
+		}.nullSafe();
+	}
 
 }

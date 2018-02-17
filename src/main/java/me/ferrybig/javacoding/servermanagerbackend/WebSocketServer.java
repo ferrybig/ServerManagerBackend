@@ -18,8 +18,9 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import me.ferrybig.javacoding.servermanagerbackend.internal.ServerConfig;
 import me.ferrybig.javacoding.servermanagerbackend.internal.ServerManager;
+import me.ferrybig.javacoding.servermanagerbackend.internal.config.DefaultConfigKeys;
+import me.ferrybig.javacoding.servermanagerbackend.internal.config.ServerConfigBuilder;
 import me.ferrybig.javacoding.servermanagerbackend.io.WebSocketServerInitializer;
 
 public final class WebSocketServer {
@@ -43,27 +44,41 @@ public final class WebSocketServer {
 
 		ServerManager serverManager = new ServerManager(taskGroup);
 
-		serverManager.createServer("test", new ServerConfig(
-				Arrays.asList("java", "-jar", "C:\\Users\\fernando\\Downloads\\mc\\spigot-1.12.2.jar"),
-				"C:\\Users\\fernando\\Downloads\\mc",
-				Arrays.asList("say server shutting down", "stop")
-		));
-		serverManager.createServer("test1", new ServerConfig(
-				Arrays.asList("java", "-jar", "D:\\Servers-Active\\Test - kopie (2)\\spigot-1.12.jar"),
-				"D:\\Servers-Active\\Test - kopie (2)",
-				Arrays.asList("say server shutting down", "stop")
-		));
+		serverManager.createServer("test", new ServerConfigBuilder()
+			.setValue(
+				DefaultConfigKeys.START_COMMAND,
+				Arrays.asList("java", "-jar", "C:\\Users\\fernando\\Downloads\\mc\\spigot-1.12.2.jar"))
+			.setValue(
+				DefaultConfigKeys.WORKING_DIRECTORY,
+				"C:\\Users\\fernando\\Downloads\\mc")
+			.setValue(
+				DefaultConfigKeys.SHUTDOWN_COMMAND,
+				Arrays.asList("say server shutting down", "stop"))
+			.build()
+		);
+		serverManager.createServer("test1", new ServerConfigBuilder()
+			.setValue(
+				DefaultConfigKeys.START_COMMAND,
+				Arrays.asList("java", "-jar", "D:\\Servers-Active\\Test - kopie (2)\\spigot-1.12.jar"))
+			.setValue(
+				DefaultConfigKeys.WORKING_DIRECTORY,
+				"D:\\Servers-Active\\Test - kopie (2)")
+			.setValue(
+				DefaultConfigKeys.SHUTDOWN_COMMAND,
+				Arrays.asList("say server shutting down", "stop"))
+			.build()
+		);
 		try {
 			ServerBootstrap b = new ServerBootstrap();
 			b.group(bossGroup, workerGroup)
-					.channel(NioServerSocketChannel.class)
-					.handler(new LoggingHandler(LogLevel.INFO))
-					.childHandler(new WebSocketServerInitializer(serverManager, sslCtx));
+				.channel(NioServerSocketChannel.class)
+				.handler(new LoggingHandler(LogLevel.INFO))
+				.childHandler(new WebSocketServerInitializer(serverManager, sslCtx));
 
 			Channel ch = b.bind(PORT).sync().channel();
 
 			System.out.println("Open your web browser and navigate to "
-					+ (SSL ? "https" : "http") + "://127.0.0.1:" + PORT + '/');
+				+ (SSL ? "https" : "http") + "://127.0.0.1:" + PORT + '/');
 
 			ch.closeFuture().sync();
 		} finally {
