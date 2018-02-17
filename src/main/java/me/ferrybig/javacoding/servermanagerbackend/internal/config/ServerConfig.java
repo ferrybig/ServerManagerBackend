@@ -51,9 +51,16 @@ public class ServerConfig {
 				out.beginObject();
 				out.name("format");
 				out.beginObject();
-				for (ConfigKey<?> key : value.config.keySet()) {
-					out.name(key.getName());
-					keyAdaptor.write(out, key);
+
+				for (Map.Entry<String, Map<String, ConfigKey<?>>> group : value.keyMapping.entrySet()) {
+					out.name(group.getKey());
+					out.beginObject();
+
+					for (Map.Entry<String, ConfigKey<?>> entry : group.getValue().entrySet()) {
+						out.name(entry.getKey());
+						keyAdaptor.write(out, entry.getValue());
+					}
+					out.endObject();
 				}
 				out.endObject();
 				out.name("values");
