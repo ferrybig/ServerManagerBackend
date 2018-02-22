@@ -65,13 +65,12 @@ public class ServerConfig {
 				out.endObject();
 				out.name("values");
 				out.beginObject();
-				Map<String, List<Map.Entry<ConfigKey<?>, String>>> values = value.config.entrySet().stream().collect(Collectors.groupingBy(e -> e.getKey().getGroup()));
-				for (Map.Entry<String, List<Map.Entry<ConfigKey<?>, String>>> entry : values.entrySet()) {
-					out.name(entry.getKey());
+				for (Map.Entry<String, Map<String, ConfigKey<?>>> group : value.keyMapping.entrySet()) {
+					out.name(group.getKey());
 					out.beginObject();
-					for (Map.Entry<ConfigKey<?>, String> innerValues : entry.getValue()) {
-						out.name(innerValues.getKey().getName());
-						out.value(innerValues.getValue());
+					for (Map.Entry<String, ConfigKey<?>> entry : group.getValue().entrySet()) {
+						out.name(entry.getKey());
+						out.value(value.config.get(entry.getValue()));
 					}
 					out.endObject();
 				}
