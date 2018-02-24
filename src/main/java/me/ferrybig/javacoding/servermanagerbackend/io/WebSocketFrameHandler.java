@@ -15,6 +15,7 @@ import me.ferrybig.javacoding.servermanagerbackend.api.request.Request;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.server.ActionRequest;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.server.ChannelRequest;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.server.InfoRequest;
+import me.ferrybig.javacoding.servermanagerbackend.api.request.server.UpdatePropertiesRequest;
 import me.ferrybig.javacoding.servermanagerbackend.api.response.InstantResponse;
 import me.ferrybig.javacoding.servermanagerbackend.api.response.Response;
 import me.ferrybig.javacoding.servermanagerbackend.api.response.StreamingDataResponse;
@@ -125,6 +126,16 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 					} else {
 						response = new InstantResponse(false, req, "Reqeust channel not implemented");
 					}
+				}
+				break;
+				case SERVER_UPDATE_PROPERTIES: {
+					UpdatePropertiesRequest updated = (UpdatePropertiesRequest)req;
+					LOG.info(updated.getProperties().toString());
+					response = new InstantResponse(false, req, "Reqeust type not implemented");
+				}
+				break;
+				case SERVER_LIST: {
+					response = new InstantResponse(false, req, "Reqeust type not implemented");
 				}
 				break;
 				default: {

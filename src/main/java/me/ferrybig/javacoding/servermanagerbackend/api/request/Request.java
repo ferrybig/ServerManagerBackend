@@ -11,6 +11,7 @@ import me.ferrybig.javacoding.servermanagerbackend.api.request.server.ListReques
 import me.ferrybig.javacoding.servermanagerbackend.api.request.server.ActionRequest;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.server.ChannelRequest;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.server.InfoRequest;
+import me.ferrybig.javacoding.servermanagerbackend.api.request.server.UpdatePropertiesRequest;
 
 /**
  *
@@ -32,6 +33,8 @@ public abstract class Request {
 		SERVER_ACTION(ActionRequest.class),
 		@SerializedName("server_info")
 		SERVER_INFO(InfoRequest.class),
+		@SerializedName("server_update_properties")
+		SERVER_UPDATE_PROPERTIES(UpdatePropertiesRequest.class),
 		@SerializedName("server_listen")
 		SERVER_LISTEN(ChannelRequest.class),
 		@SerializedName("kill_stream")
