@@ -8,6 +8,7 @@ package me.ferrybig.javacoding.servermanagerbackend.io;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 import me.ferrybig.javacoding.servermanagerbackend.api.request.KillStreamRequest;
@@ -130,8 +131,16 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 				break;
 				case SERVER_UPDATE_PROPERTIES: {
 					UpdatePropertiesRequest updated = (UpdatePropertiesRequest)req;
+					Server server = this.serverManager.getServer(updated.server);
+					Response res;
+					try {
+						server.getConfig().setValuesFromRequest(updated.getProperties());
+						res = new InstantResponse(true, req, "Updated properties");
+					} catch(IllegalArgumentException e) {
+						res = new InstantResponse(false, req, "Reqeust type not implemented");
+					}
+					response = res;
 					LOG.info(updated.getProperties().toString());
-					response = new InstantResponse(false, req, "Reqeust type not implemented");
 				}
 				break;
 				case SERVER_LIST: {
