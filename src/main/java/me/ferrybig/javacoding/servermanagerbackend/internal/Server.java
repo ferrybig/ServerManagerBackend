@@ -77,6 +77,10 @@ public class Server {
 		logFile.removeByteListener(listener);
 	}
 
+	public StateListener.State getState() {
+		return stateWatcher.getState();
+	}
+
 	public void addStateListener(StateListener listener) {
 		stateWatcher.addListener(listener);
 	}

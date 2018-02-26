@@ -14,16 +14,8 @@ import me.ferrybig.javacoding.servermanagerbackend.api.request.Request;
  */
 public class ListRequest extends Request {
 
-	@SerializedName("object_type")
-	public ObjectType objectType;
-
 	public ListRequest() {
 		super(Type.SERVER_LIST);
-	}
-
-	public enum ObjectType {
-		@SerializedName("server")
-		SERVER,
 	}
 
 }

@@ -37,8 +37,8 @@ public class ConfigFormat<T> {
 	public static final ConfigFormat<Integer> PORT = new ConfigFormat<>(
 		Pattern.compile("-?\\d+"), "ip", "port", Integer::parseInt);
 
-	public static final ConfigFormat<Integer> IP_ADDRESS = new ConfigFormat<>(
-		Pattern.compile("(\\[[0-9a-fA-F:]+\\]|[0-9.]+)"), "ip", "address", Integer::parseInt);
+	public static final ConfigFormat<String> IP_ADDRESS = new ConfigFormat<>(
+		Pattern.compile("(\\[[0-9a-fA-F:]+\\]|[0-9.]+)"), "ip", "address", Function.identity());
 
 	public static final ConfigFormat<Double> DOUBLE = new ConfigFormat<>(
 		Pattern.compile("-?\\d*(\\.\\d+)?"), "number", "double", Double::parseDouble);

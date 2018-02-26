@@ -5,6 +5,9 @@
  */
 package me.ferrybig.javacoding.servermanagerbackend.internal;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
@@ -22,6 +25,10 @@ public class ServerManager {
 
 	public Server getServer(String id) {
 		return servers.get(id);
+	}
+
+	public Map<String, Server> getAllServers() {
+		return Collections.unmodifiableMap(servers);
 	}
 
 	public Server createServer(String id, ServerConfig config) {

@@ -21,6 +21,10 @@ public class StateWatcher implements StateListener {
 
 	}
 
+	public State getState() {
+		return state;
+	}
+
 	public void addListener(StateListener listener) {
 		listener.onStateChange(state);
 		listeners.add(listener);

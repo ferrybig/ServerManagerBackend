@@ -25,6 +25,7 @@ import me.ferrybig.javacoding.servermanagerbackend.internal.ByteListener;
 import me.ferrybig.javacoding.servermanagerbackend.internal.Server;
 import me.ferrybig.javacoding.servermanagerbackend.internal.ServerManager;
 import me.ferrybig.javacoding.servermanagerbackend.internal.StateListener;
+import me.ferrybig.javacoding.servermanagerbackend.internal.config.DefaultConfigKeys;
 
 /**
  * Echoes uppercase content of text frames.
@@ -137,14 +138,24 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<Request> 
 						server.getConfig().setValuesFromRequest(updated.getProperties());
 						res = new InstantResponse(true, req, "Updated properties");
 					} catch(IllegalArgumentException e) {
-						res = new InstantResponse(false, req, "Reqeust type not implemented");
+						res = new InstantResponse(false, req, "Exception during saving: " + e.getMessage());
 					}
 					response = res;
 					LOG.info(updated.getProperties().toString());
 				}
 				break;
 				case SERVER_LIST: {
-					response = new InstantResponse(false, req, "Reqeust type not implemented");
+					Map<String, Map<String, Object>> result = new LinkedHashMap<>();
+					for(Map.Entry<String, Server> server: this.serverManager.getAllServers().entrySet()) {
+						Map<String, Object> perServer = new LinkedHashMap<>();
+						Server serverInstance = server.getValue();
+						perServer.put("state", serverInstance.getState());
+						perServer.put("name", serverInstance.getConfig().getValue(DefaultConfigKeys.DISPLAY_NAME).orElse(server.getKey()));
+						perServer.put("host", serverInstance.getConfig().getValue(DefaultConfigKeys.VIRTUAL_HOST_IP).orElse("[::]"));
+						perServer.put("port", serverInstance.getConfig().getValue(DefaultConfigKeys.VIRTUAL_HOST_PORT).orElse(0));
+						result.put(server.getKey(), perServer);
+					}
+					response = new InstantResponse(true, req, result);
 				}
 				break;
 				default: {
