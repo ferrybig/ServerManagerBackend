@@ -54,6 +54,9 @@ public final class WebSocketServer {
 			.setValue(
 				DefaultConfigKeys.SHUTDOWN_COMMAND,
 				Arrays.asList("say server shutting down", "stop"))
+			.setValue(
+				DefaultConfigKeys.VIRTUAL_HOST_PORT,
+				25565)
 			.build()
 		);
 		serverManager.createServer("test1", new ServerConfigBuilder()
@@ -66,6 +69,9 @@ public final class WebSocketServer {
 			.setValue(
 				DefaultConfigKeys.SHUTDOWN_COMMAND,
 				Arrays.asList("say server shutting down", "stop"))
+			.setValue(
+				DefaultConfigKeys.VIRTUAL_HOST_PORT,
+				25565)
 			.build()
 		);
 		try {
