@@ -26,6 +26,13 @@ public abstract class Request {
 		this.type = type;
 	}
 
+	public String validate() {
+		if (this.type == null) {
+			return "type == null";
+		}
+		return null;
+	}
+
 	public enum Type {
 		@SerializedName("server_list")
 		SERVER_LIST(ListRequest.class),

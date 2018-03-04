@@ -41,7 +41,13 @@ public class ResponseHandler extends ChannelDuplexHandler {
 		if (msg instanceof TextWebSocketFrame) {
 			String json = ((TextWebSocketFrame) msg).text();
 			((TextWebSocketFrame) msg).release();
-			msg = JSON_PARSER.fromJson(json, Request.class);
+			Request req = JSON_PARSER.fromJson(json, Request.class);
+			String validation = req.validate();
+			if (validation != null) {
+				ctx.channel().close();
+				throw new IllegalArgumentException("Wrong input data for channel:" + ctx.channel() + ": " + validation);
+			}
+			msg = req;
 		}
 		ctx.fireChannelRead(msg);
 	}
