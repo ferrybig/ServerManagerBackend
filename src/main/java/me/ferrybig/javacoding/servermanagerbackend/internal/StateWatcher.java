@@ -7,7 +7,7 @@ package me.ferrybig.javacoding.servermanagerbackend.internal;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class StateWatcher implements StateListener {
+public class StateWatcher implements StateListener, StateNotifier {
 
 	public volatile State state = State.STOPPED;
 	private final CopyOnWriteArrayList<StateListener> listeners = new CopyOnWriteArrayList<>();
@@ -25,11 +25,13 @@ public class StateWatcher implements StateListener {
 		return state;
 	}
 
+	@Override
 	public void addListener(StateListener listener) {
 		listener.onStateChange(state);
 		listeners.add(listener);
 	}
 
+	@Override
 	public void removeListener(StateListener listener) {
 		listeners.remove(listener);
 	}
