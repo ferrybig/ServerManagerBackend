@@ -6,18 +6,36 @@
 
 package me.ferrybig.javacoding.servermanagerbackend.internal;
 
+import io.netty.util.concurrent.ScheduledFuture;
 import me.ferrybig.javacoding.servermanagerbackend.util.LogRecorder;
 
 public class ServerContext {
 	private final LogRecorder recorder;
 	private boolean shutdownRequested = false;
+	private boolean startupRequested = false;
+	private ScheduledFuture<?> forceStopTask;
+
 
 	public ServerContext(LogRecorder recorder) {
 		this.recorder = recorder;
 	}
 
-	public void setRunning() {
+	public void setRequestedState(RequestState state) {
 
+	}
+	
+	public boolean isRunning() {
+		return false;
+	}
+
+	public void sendCommand(String cmd) {
+
+	}
+
+	public enum RequestState {
+		RUNNING,
+		RESTARTING,
+		STOPPED,
 	}
 
 	public enum NativeAction {
