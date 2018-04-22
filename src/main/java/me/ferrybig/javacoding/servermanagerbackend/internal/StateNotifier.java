@@ -5,7 +5,6 @@
  */
 package me.ferrybig.javacoding.servermanagerbackend.internal;
 
-
 public interface StateNotifier {
 
 	void addListener(StateListener listener);

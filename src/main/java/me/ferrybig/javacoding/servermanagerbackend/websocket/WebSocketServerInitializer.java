@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.ferrybig.javacoding.servermanagerbackend.io;
+package me.ferrybig.javacoding.servermanagerbackend.websocket;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -15,19 +15,19 @@ import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketSe
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
-import me.ferrybig.javacoding.servermanagerbackend.internal.ServerManager;
+import me.ferrybig.javacoding.servermanagerbackend.MasterServer;
 
 /**
  */
 public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel> {
 
 	private static final String WEBSOCKET_PATH = "/websocket";
-	private final ServerManager serverManager;
+	private final MasterServer master;
 
 	private final SslContext sslCtx;
 
-	public WebSocketServerInitializer(ServerManager serverManager, SslContext sslCtx) {
-		this.serverManager = serverManager;
+	public WebSocketServerInitializer(MasterServer serverManager, SslContext sslCtx) {
+		this.master = serverManager;
 		this.sslCtx = sslCtx;
 	}
 
@@ -45,6 +45,6 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
 		pipeline.addLast(new WebSocketIndexPageHandler());
 		pipeline.addLast(new LoggingHandler(LogLevel.INFO));
 		pipeline.addLast(new ResponseHandler());
-		pipeline.addLast(new WebSocketFrameHandler(serverManager));
+		pipeline.addLast(new WebSocketFrameHandler(master));
 	}
 }

@@ -3,8 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.ferrybig.javacoding.servermanagerbackend.api;
+package me.ferrybig.javacoding.servermanagerbackend.plugin;
 
-public class MainRouter {
+public class PluginConfiguration {
 
 }

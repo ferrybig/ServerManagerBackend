@@ -25,7 +25,7 @@ public class ConfigFormat<T> {
 
 	public static final ConfigFormat<String> STRING = new ConfigFormat<>(
 		Pattern.compile("[^\n]*"), "string", "", Function.identity());
-	
+
 	public static final ConfigFormat<List<String>> STRING_LIST = new ConfigFormat<>(
 		Pattern.compile("[^\0\n]*(\0[^\0\n]*)*"), "list", "string",
 		s -> Arrays.asList(s.split("\0")),

@@ -3,18 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package me.ferrybig.javacoding.servermanagerbackend.internal;
 
 import io.netty.util.concurrent.ScheduledFuture;
 import me.ferrybig.javacoding.servermanagerbackend.util.LogRecorder;
 
 public class ServerContext {
+
 	private final LogRecorder recorder;
 	private boolean shutdownRequested = false;
 	private boolean startupRequested = false;
 	private ScheduledFuture<?> forceStopTask;
-
 
 	public ServerContext(LogRecorder recorder) {
 		this.recorder = recorder;
@@ -23,7 +22,7 @@ public class ServerContext {
 	public void setRequestedState(RequestState state) {
 
 	}
-	
+
 	public boolean isRunning() {
 		return false;
 	}
@@ -48,6 +47,7 @@ public class ServerContext {
 	}
 
 	public interface NativeServerHandler extends StateNotifier {
+
 		void dispatchAction(NativeAction action);
 	}
 
